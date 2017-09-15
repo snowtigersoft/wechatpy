@@ -31,6 +31,7 @@ class WeChatPay(object):
     :param appid: 微信公众号 appid
     :param api_key: 商户 key
     :param mch_id: 商户号
+    :param sub_appid: 可选，子商户公众账号ID，如需在支付完成后获取sub_openid则此参数必传。
     :param sub_mch_id: 可选，子商户号，受理模式下必填
     :param mch_cert: 必填，商户证书路径
     :param mch_key: 必填，商户证书私钥路径
@@ -63,18 +64,20 @@ class WeChatPay(object):
             setattr(self, name, _api)
         return self
 
-    def __init__(self, appid, api_key, mch_id, sub_mch_id=None,
+    def __init__(self, appid, api_key, mch_id, sub_appid=None, sub_mch_id=None,
                  mch_cert=None, mch_key=None):
         """
         :param appid: 微信公众号 appid
         :param api_key: 商户 key
         :param mch_id: 商户号
+        :param sub_appid: 可选，子商户公众账号ID，如需在支付完成后获取sub_openid则此参数必传。
         :param sub_mch_id: 可选，子商户号，受理模式下必填
         :param mch_cert: 商户证书路径
         :param mch_key: 商户证书私钥路径
         """
         self.appid = appid
         self.api_key = api_key
+        self.sub_appid = sub_appid
         self.mch_id = mch_id
         self.sub_mch_id = sub_mch_id
         self.mch_cert = mch_cert
@@ -96,6 +99,7 @@ class WeChatPay(object):
             if 'mchid' not in data:
                 # Fuck Tencent
                 data.setdefault('mch_id', self.mch_id)
+            data.setdefault('sub_appid', self.sub_appid)
             data.setdefault('sub_mch_id', self.sub_mch_id)
             data.setdefault('nonce_str', random_string(32))
             sign = calculate_signature(data, self.api_key)
